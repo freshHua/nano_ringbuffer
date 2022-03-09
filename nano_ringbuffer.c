@@ -6,7 +6,6 @@
 
 #include "nano_ringbuffer.h"
 
-
 /*
  * min()/max() macros that also do
  * strict type-checking.. See the
@@ -30,14 +29,14 @@ static int is_power_of_2(unsigned long n)
 	return (n != 0 && ((n & (n - 1)) == 0));
 }
 
-int nano_ringbuffer_init(struct nano_ringbuffer_t *ringbuffer, unsigned int size)
+unsigned int nano_ringbuffer_init(struct nano_ringbuffer_t *ringbuffer, unsigned int size)
 {
 	/* size must be a power of 2 */
 	assert(is_power_of_2(size));
 
 	ringbuffer->buffer = malloc(size);
 	if (!ringbuffer->buffer)
-		return -1;
+		return 0;
 
 	ringbuffer->size = size;
 	ringbuffer->in = ringbuffer->out = 0;
@@ -62,7 +61,6 @@ static void __nano_ringbuffer_reset(struct nano_ringbuffer_t *ringbuffer)
  */
 void nano_ringbuffer_reset(struct nano_ringbuffer_t *ringbuffer)
 {
-
 	pthread_mutex_lock(&ringbuffer->lock);
 
 	__nano_ringbuffer_reset(ringbuffer);
@@ -70,8 +68,8 @@ void nano_ringbuffer_reset(struct nano_ringbuffer_t *ringbuffer)
 	pthread_mutex_unlock(&ringbuffer->lock);
 }
 
-
-int nano_ringbuffer_is_empty(struct nano_ringbuffer_t *ringbuffer){
+int nano_ringbuffer_is_empty(struct nano_ringbuffer_t *ringbuffer)
+{
 	return ringbuffer->in == ringbuffer->out ;
 }
 
@@ -79,7 +77,6 @@ static unsigned int ___nano_ringbuffe_size(struct nano_ringbuffer_t *ringbuffer)
 {
 	return ringbuffer->size;
 }
-
 
 /**
  * __nano_ringbuffer_len - returns the number of bytes available in the ringbuffer
@@ -99,14 +96,13 @@ static unsigned int __nano_ringbuffer_avail(struct nano_ringbuffer_t *ringbuffer
 	return ___nano_ringbuffe_size(ringbuffer) - __nano_ringbuffer_len(ringbuffer);
 }
 
-
 int nano_ringbuffer_is_full(struct nano_ringbuffer_t *ringbuffer)
 {
 	return __nano_ringbuffer_len(ringbuffer) == ___nano_ringbuffe_size(ringbuffer);
 }
 
-
-void nano_ringbuffer_free(struct nano_ringbuffer_t *ringbuffer){
+void nano_ringbuffer_free(struct nano_ringbuffer_t *ringbuffer)
+{
 	free(ringbuffer->buffer);
 }
 
@@ -138,14 +134,12 @@ static int __nano_ringbuffer_put(struct nano_ringbuffer_t *ringbuffer,
 
 	len = min(len, ringbuffer->size - ringbuffer->in + ringbuffer->out);
 
-
 	/* first put the data starting from fifo->in to buffer end */
 	l = min(len, ringbuffer->size - (ringbuffer->in & (ringbuffer->size - 1)));
 	memcpy(ringbuffer->buffer + (ringbuffer->in & (ringbuffer->size - 1)), buffer, l);
 
 	/* then put the rest (if any) at the beginning of the buffer */
 	memcpy(ringbuffer->buffer, buffer + l, len - l);
-
 
 	ringbuffer->in += len;
 
@@ -178,7 +172,6 @@ static int __nano_ringbuffer_get(struct nano_ringbuffer_t *ringbuffer,
 
 	*len = min(*len, ringbuffer->in - ringbuffer->out);
 
-
 	/* first get the data from fifo->out until the end of the buffer */
 	l = min(*len, ringbuffer->size - (ringbuffer->out & (ringbuffer->size - 1)));
 	memcpy(buffer, ringbuffer->buffer + (ringbuffer->out & (ringbuffer->size - 1)), l);
@@ -195,7 +188,6 @@ static int __nano_ringbuffer_get(struct nano_ringbuffer_t *ringbuffer,
 	if (ringbuffer->in == ringbuffer->out)
 		ringbuffer->in = ringbuffer->out = 0;
 
-
 	return 0;
 }
 
@@ -207,7 +199,6 @@ int nano_ringbuffer_get(struct nano_ringbuffer_t *ringbuffer,
 	pthread_mutex_lock(&ringbuffer->lock);
 
 	ret = __nano_ringbuffer_get(ringbuffer, buffer, len);
-
 
 	pthread_mutex_unlock(&ringbuffer->lock);
 
