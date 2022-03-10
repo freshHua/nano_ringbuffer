@@ -73,7 +73,7 @@ int nano_ringbuffer_is_empty(struct nano_ringbuffer_t *ringbuffer)
 	return ringbuffer->in == ringbuffer->out ;
 }
 
-static unsigned int ___nano_ringbuffe_size(struct nano_ringbuffer_t *ringbuffer)
+static unsigned int ___nano_ringbuffer_size(struct nano_ringbuffer_t *ringbuffer)
 {
 	return ringbuffer->size;
 }
@@ -93,12 +93,12 @@ static unsigned int __nano_ringbuffer_len(struct nano_ringbuffer_t *ringbuffer)
  */
 static unsigned int __nano_ringbuffer_avail(struct nano_ringbuffer_t *ringbuffer)
 {
-	return ___nano_ringbuffe_size(ringbuffer) - __nano_ringbuffer_len(ringbuffer);
+	return ___nano_ringbuffer_size(ringbuffer) - __nano_ringbuffer_len(ringbuffer);
 }
 
 int nano_ringbuffer_is_full(struct nano_ringbuffer_t *ringbuffer)
 {
-	return __nano_ringbuffer_len(ringbuffer) == ___nano_ringbuffe_size(ringbuffer);
+	return __nano_ringbuffer_len(ringbuffer) == ___nano_ringbuffer_size(ringbuffer);
 }
 
 void nano_ringbuffer_free(struct nano_ringbuffer_t *ringbuffer)
