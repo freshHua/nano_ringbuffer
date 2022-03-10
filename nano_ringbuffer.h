@@ -9,8 +9,7 @@ struct nano_ringbuffer_t {
 	pthread_mutex_t lock;	/* protects concurrent modifications */
 };
 
-
-int nano_ringbuffer_init(struct nano_ringbuffer_t *ringbuffer,unsigned int size);
+unsigned int nano_ringbuffer_init(struct nano_ringbuffer_t *ringbuffer,unsigned int size);
 
 void nano_ringbuffer_reset(struct nano_ringbuffer_t *ringbuffer);
 
@@ -25,6 +24,5 @@ unsigned int nano_ringbuffer_len(struct nano_ringbuffer_t *ringbuffer);
 int nano_ringbuffer_put(struct nano_ringbuffer_t *ringbuffer,const unsigned char *buffer, unsigned int len);
 
 int nano_ringbuffer_get(struct nano_ringbuffer_t *ringbuffer,unsigned char *buffer, unsigned int *len);
-
 
 #endif
